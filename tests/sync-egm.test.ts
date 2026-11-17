@@ -1,9 +1,6 @@
-import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import * as os from "node:os";
-import * as path from "node:path";
 import { expect, test } from "vitest";
-import { appendPiDispatchName, checkSync, insertPiPointer } from "../scripts/sync-egm.ts";
+import { checkVendor } from "../scripts/lib/vendor.ts";
+import piEgm, { appendPiDispatchName, insertPiPointer } from "../scripts/vendors/pi-egm.ts";
 
 const CLAUDE = "In Claude Code or Cowork, read `${CLAUDE_PLUGIN_ROOT}/docs/claude.md` first.\n";
 
@@ -30,14 +27,8 @@ test("leaves text without the enumeration unchanged", () => {
   expect(appendPiDispatchName("no enumeration here")).toBe("no enumeration here");
 });
 
-test("checkSync detects a hand-edited vendored file without network", () => {
-  const dir = mkdtempSync(path.join(os.tmpdir(), "egm-check-"));
-  mkdirSync(path.join(dir, "skills", "s"), { recursive: true });
-  const file = path.join(dir, "skills", "s", "SKILL.md");
-  writeFileSync(file, "original");
-  const hash = createHash("sha256").update("original").digest("hex");
-  writeFileSync(path.join(dir, "UPSTREAM.json"), JSON.stringify({ files: { "skills/s/SKILL.md": hash } }));
-  expect(checkSync(dir)).toBe(true);
-  writeFileSync(file, "edited");
-  expect(checkSync(dir)).toBe(false);
+test("pi-egm descriptor pins the EGM tag and hashes the vendored tree", () => {
+  expect(piEgm.refStrategy.kind).toBe("tag");
+  expect(piEgm.transforms.map((t) => t.name)).toEqual(["pi-pointer", "pi-dispatch-name"]);
+  expect(checkVendor(piEgm)).toBe(true);
 });
