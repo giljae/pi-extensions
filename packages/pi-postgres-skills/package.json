@@ -3,6 +3,11 @@
   "version": "0.0.2",
   "description": "PostgreSQL guidance for the Pi coding agent: Microsoft's postgres-skills (best practices, Apache AGE graphs, Oracle migration) with a bundled PostgreSQL MCP server. Vendored from microsoft/postgres-skills (MIT). Not an officially supported Microsoft product.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giljae/pi-extensions.git",
+    "directory": "packages/pi-postgres-skills"
+  },
   "keywords": [
     "pi-package",
     "postgresql",

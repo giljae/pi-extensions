@@ -14,6 +14,8 @@ test("every package is gallery-ready", () => {
     expect(pkg.publishConfig?.access, name).toBe("public");
     expect(Array.isArray(pkg.files) && pkg.files.length, name).toBeTruthy();
     expect(existsSync(new URL("LICENSE", base)), name).toBe(true);
+    const repoUrl = typeof pkg.repository === "string" ? pkg.repository : pkg.repository?.url;
+    expect(repoUrl, name).toContain("github.com/giljae/pi-extensions");
     if (existsSync(new URL("skills", base)) || existsSync(new URL("extensions", base))) {
       expect(pkg.pi, name).toBeTruthy();
     }
