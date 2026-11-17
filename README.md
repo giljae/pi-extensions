@@ -72,20 +72,39 @@ npm install
 npm run check                                                # typecheck + tests
 ```
 
-Some packages vendor upstream content and regenerate it with a script. For
-`pi-egm`:
+Some packages vendor upstream content. Each vendored package ships one
+descriptor at `scripts/vendors/<pkg>.ts`; the shared core fetches a pinned ref,
+copies an allowlisted subset, applies fail-loud transforms, and records
+per-file hashes in `UPSTREAM.json`.
 
 ```bash
-npm run sync-egm -- --ref v0.1.1 --package packages/pi-egm   # refresh vendored EGM
-npm run sync-egm -- --check --package packages/pi-egm        # verify hashes, no network
+npm run vendor:check                                    # verify every vendored tree, no network
+npx tsx scripts/run-vendor-sync.ts --all --latest       # refresh all vendored trees
+npx tsx scripts/run-vendor-sync.ts pi-egm --ref v0.1.1  # refresh one tree at a pinned ref
 ```
 
 Vendored paths are generated — never hand-edit them; the integrity test will
-fail. See [NOTICE](NOTICE) for the upstream attribution.
+fail. The scheduled `vendor-sync` workflow opens a pull request when an upstream
+moves. See [NOTICE](NOTICE) for the upstream attribution.
 
 Releases use [changesets](https://github.com/changesets/changesets); each
-package carries its own version. Publishing is a deliberate, human-triggered
-step.
+package carries its own version. On merge to `main`, the `release` workflow
+opens a Version Packages pull request and, when that merges, publishes to npm;
+the `pi-package` keyword lists each package on the Pi gallery.
+
+## Adding a package
+
+1. Create `packages/<name>/` with a `package.json`: a unique name, the
+   `pi-package` keyword, `publishConfig.access: "public"`, a minimal `files`
+   list, a `pi` manifest when it ships skills or extensions, and a `LICENSE`.
+2. If it vendors an upstream, add a descriptor at `scripts/vendors/<name>.ts`
+   (a default `VendorSpec` export). `run-vendor-sync.ts` and `vendor-sync.yml`
+   discover it automatically — no shared script or workflow change.
+3. Run `npm run vendor:check`, and `npm run check` for the full suite.
+4. Configure an [npm trusted publisher](https://docs.npmjs.com/trusted-publishers)
+   for the new package name before its first publish.
+5. Open a pull request. CI covers the manifest, license, and shared-code
+   conventions for every package under `packages/*`.
 
 ## License
 
