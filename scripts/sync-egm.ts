@@ -52,6 +52,7 @@ function listVendored(packageDir: string): string[] {
   const out: string[] = [];
   const walk = (rel: string) => {
     const abs = path.join(packageDir, rel);
+    if (!fs.existsSync(abs)) return;
     for (const entry of fs.readdirSync(abs, { withFileTypes: true })) {
       const child = path.posix.join(rel, entry.name);
       if (entry.isDirectory()) walk(child);
@@ -74,11 +75,20 @@ function copyDir(from: string, to: string): void {
   fs.cpSync(from, to, { recursive: true });
 }
 
+/** Compare the on-disk vendored tree against the recorded hashes, without network. */
+export function checkSync(packageDir: string): boolean {
+  const upstreamPath = path.join(packageDir, "UPSTREAM.json");
+  if (!fs.existsSync(upstreamPath)) return false;
+  const previous = JSON.parse(fs.readFileSync(upstreamPath, "utf8")) as {
+    files?: Record<string, string>;
+  };
+  return JSON.stringify(previous.files) === JSON.stringify(hashTree(packageDir));
+}
+
 export interface SyncOptions {
   ref: string;
   packageDir: string;
   root?: string;
-  check?: boolean;
 }
 
 export interface SyncResult {
@@ -132,12 +142,6 @@ export async function runSync(options: SyncOptions): Promise<SyncResult> {
       : undefined;
     const changed = JSON.stringify(previous?.files) !== JSON.stringify(files);
 
-    if (options.check) {
-      const ok = JSON.stringify(previous?.files) === JSON.stringify(files);
-      if (!ok) throw new Error("Vendored tree does not match UPSTREAM.json");
-      return { changed: false, commit: previous?.commit ?? commit };
-    }
-
     fs.writeFileSync(
       upstreamPath,
       JSON.stringify(
@@ -181,16 +185,17 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const get = (flag: string): string | undefined =>
     args.includes(flag) ? args[args.indexOf(flag) + 1] : undefined;
+  const packageDir = path.resolve(get("--package") ?? "packages/pi-egm");
+  if (args.includes("--check")) {
+    const ok = checkSync(packageDir);
+    console.log(`${ok ? "ok" : "drift"}: ${packageDir}`);
+    if (!ok) process.exitCode = 1;
+    return;
+  }
   const ref = args.includes("--latest") ? latestRef() : get("--ref");
   if (!ref) throw new Error("Provide --ref <tag> or --latest");
-  const result = await runSync({
-    ref,
-    packageDir: get("--package") ?? "packages/pi-egm",
-    check: args.includes("--check"),
-  });
-  console.log(
-    `${args.includes("--check") ? "checked" : result.changed ? "updated" : "unchanged"}: ${ref} (${result.commit})`,
-  );
+  const result = await runSync({ ref, packageDir });
+  console.log(`${result.changed ? "updated" : "unchanged"}: ${ref} (${result.commit})`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

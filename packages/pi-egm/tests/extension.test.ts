@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { expect, test } from "vitest";
-import { ROLE_TO_PERSONA, buildGoldfishArgv } from "../extensions/egm-goldfish/index.ts";
+import { ROLE_TO_PERSONA, buildGoldfishArgv, runChild } from "../extensions/egm-goldfish/index.ts";
 
 test("pins the exact read-only child argv", () => {
   expect(buildGoldfishArgv("Task: review x")).toEqual([
@@ -22,4 +22,8 @@ test("maps every vendored persona name", () => {
     .filter((f) => f.endsWith(".md"))
     .map((f) => /^name:\s*(egm-[a-z-]+)\s*$/m.exec(readFileSync(new URL(`agents/${f}`, root), "utf8").split("---", 2)[1] ?? "")?.[1]);
   expect(Object.keys(ROLE_TO_PERSONA).sort()).toEqual(names.sort());
+});
+
+test("runChild rejects instead of hanging when the command is missing", async () => {
+  await expect(runChild({ command: "definitely-not-a-real-binary-xyz", args: [] })).rejects.toThrow();
 });

@@ -33,6 +33,25 @@ export function buildGoldfishArgv(task: string, extra: string[] = []): string[] 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..", "..");
 
+/** Run the child process, rejecting on spawn failure or a non-zero exit. */
+export function runChild(invocation: { command: string; args: string[] }): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(invocation.command, invocation.args, {
+      cwd: HERE,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let out = "";
+    let err = "";
+    child.stdout.on("data", (data) => (out += data));
+    child.stderr.on("data", (data) => (err += data));
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) resolve(out);
+      else reject(new Error(`${out}\n${err}`.trim()));
+    });
+  });
+}
+
 function invocation(args: string[]): { command: string; args: string[] } {
   const script = process.argv[1];
   const bunVirtual = script !== undefined &&
@@ -71,20 +90,19 @@ export default function (pi: ExtensionAPI) {
       if (params.thinking_level) extra.push("--thinking", params.thinking_level);
       const task = `Task: review ${params.target} as ${role}. Return findings as text.`;
       const args = buildGoldfishArgv(task, [...extra, "--append-system-prompt", promptFile]);
-      const inv = invocation(args);
-      const output = await new Promise<string>((resolve) => {
-        const child = spawn(inv.command, inv.args, {
-          cwd: HERE,
-          stdio: ["ignore", "pipe", "pipe"],
-        });
-        let out = "";
-        let err = "";
-        child.stdout.on("data", (data) => (out += data));
-        child.stderr.on("data", (data) => (err += data));
-        child.on("close", (code) => resolve(code === 0 ? out : `${out}\n${err}`));
-      });
-      fs.rmSync(promptFile, { force: true });
-      return { content: [{ type: "text", text: output.trim() }], details: { role } };
+      try {
+        const output = await runChild(invocation(args));
+        return { content: [{ type: "text", text: output.trim() }], details: { role } };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        return {
+          content: [{ type: "text", text: `egm_goldfish failed: ${message}` }],
+          isError: true,
+          details: { role },
+        };
+      } finally {
+        fs.rmSync(promptFile, { force: true });
+      }
     },
   });
 }
