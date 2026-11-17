@@ -215,9 +215,12 @@ Tested live on Pi 1.5.2 on 2026-11-17 (headless, default model):
   reviewers ran through `egm_goldfish`, and each stage's document standards and
   the prior-stage report for Stage 8 were passed through the tool's `standards`
   and `context` parameters.
+- Interactive approval gates hold: driven over Pi's RPC mode, `egm-brainstorm`
+  asked a clarifying question and stopped; after a human answer it continued to
+  the next question without dispatching reviewers or writing files.
 
-Not yet verified: the full interactive `egm-brainstorm` / `egm-draft` flows with
-human approval gates, which need an interactive session.
+Not yet verified: a complete human-driven `egm-brainstorm` / `egm-draft` run in
+the terminal TUI through to a final artifact.
 
 ## Provenance and license
 
