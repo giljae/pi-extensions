@@ -7,7 +7,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "npm run typecheck && npm run test"
+    "check": "npm run typecheck && npm run test",
+    "vendor:check": "tsx scripts/run-vendor-sync.ts --all --check"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0",
