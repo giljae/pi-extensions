@@ -25,12 +25,15 @@ only that one.
 | Package | What it does | Install |
 | --- | --- | --- |
 | [`@giljae/pi-egm`](packages/pi-egm) | Brings the [Elephant-Goldfish Model](https://egm.dev) spec-driven workflow to Pi: an elephant drafts the spec, fresh zero-context **read-only** Goldfish reviewers stress-test it, and you approve the trade-offs. No subagent extension required. | `pi install npm:@giljae/pi-egm` |
+| [`@giljae/pi-postgres-skills`](packages/pi-postgres-skills) | Brings Microsoft's [`postgres-skills`](https://github.com/microsoft/postgres-skills) to Pi — PostgreSQL best practices, Apache AGE graph workflows, and Oracle migration — and registers the bundled PostgreSQL MCP server. Vendored (MIT). | `pi install npm:@giljae/pi-postgres-skills` |
 
 More packages land here over time. Each has its own README with the full
 details — start there:
 
 - [`packages/pi-egm`](packages/pi-egm) — install, quick start, the skills,
   configuration, and the vendoring/sync model.
+- [`packages/pi-postgres-skills`](packages/pi-postgres-skills) — install, the
+  database connection setup, the bundled MCP server, and the vendoring model.
 
 ## Install a package
 
@@ -55,8 +58,10 @@ Pi identifies each package by its npm name, and the gallery lists every
 ```text
 pi-extensions/
 ├── packages/            # one directory per published package
-│   └── pi-egm/          # @giljae/pi-egm
-├── scripts/             # repo tooling (for example, the EGM vendoring sync)
+│   ├── pi-egm/          # @giljae/pi-egm
+│   └── pi-postgres-skills/   # @giljae/pi-postgres-skills
+├── scripts/             # repo tooling: the shared vendoring core and its CLI
+│   └── vendors/         # one descriptor per vendored package
 ├── tests/               # repo-level tests (scaffold, workflows, sync tooling)
 └── .github/workflows/   # CI and any scheduled maintenance workflows
 ```
@@ -108,8 +113,11 @@ the `pi-package` keyword lists each package on the Pi gallery.
 
 ## License
 
-Apache-2.0. Portions are vendored from
+Apache-2.0 for this repository. Vendored portions keep their upstream license:
 [`google/elephant-goldfish-model`](https://github.com/google/elephant-goldfish-model)
-(Apache-2.0, Copyright Google LLC); see [NOTICE](NOTICE).
+(Apache-2.0, Copyright Google LLC) in `@giljae/pi-egm`, and
+[`microsoft/postgres-skills`](https://github.com/microsoft/postgres-skills)
+(MIT, Copyright (c) 2025 Microsoft Corporation) in
+`@giljae/pi-postgres-skills`. See [NOTICE](NOTICE).
 
-**Not an officially supported Google product.**
+**Not an officially supported Google or Microsoft product.**
