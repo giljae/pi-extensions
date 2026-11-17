@@ -1,6 +1,6 @@
 {
   "name": "@giljae/pi-design-skills",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "UI, motion, and interaction design skills for the Pi coding agent, from Emil Kowalski (Vercel, Linear). Vendored from emilkowalski/skills (MIT). Not affiliated with the author.",
   "license": "MIT",
   "repository": {
