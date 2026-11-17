@@ -8,6 +8,7 @@
   "type": "module",
   "files": ["extensions", "skills", "README.md", "LICENSE"],
   "pi": { "extensions": ["./extensions"], "skills": ["./skills"] },
+  "dependencies": { "@microsoft/postgres-mcp": "0.3.0" },
   "peerDependencies": { "@earendil-works/pi-coding-agent": "*" },
   "peerDependenciesMeta": { "@earendil-works/pi-coding-agent": { "optional": true } }
 }

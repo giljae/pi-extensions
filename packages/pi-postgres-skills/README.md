@@ -37,7 +37,10 @@ Then ask Pi to connect to `my-database` and inspect the schema.
 
 - Adds the three skills to Pi.
 - Registers the `postgres-mcp` server for the session. Its tools are exposed as
-  `mcp__postgres-mcp__<operation>` and default to codemode exposure.
+  `mcp__postgres-mcp__<operation>` and default to codemode exposure. The server
+  is launched from the installed `@microsoft/postgres-mcp` bin; if that
+  resolution fails, launch it manually with
+  `npx -y @microsoft/postgres-mcp@0.3.0 run --no-telemetry`.
 - A user `mcp.json` entry named `postgres-mcp` overrides the registration.
 
 The PostgreSQL role is the effective security boundary. Use a read-only role,
