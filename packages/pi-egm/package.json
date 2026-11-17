@@ -1,0 +1,24 @@
+{
+  "name": "@giljae/pi-egm",
+  "version": "0.1.0",
+  "description": "Elephant-Goldfish Model for the Pi coding agent: design with an elephant, review with fresh read-only Goldfish. Vendored from google/elephant-goldfish-model (Apache-2.0). Not an officially supported Google product.",
+  "license": "Apache-2.0",
+  "keywords": ["pi-package", "egm", "elephant-goldfish-model", "spec-driven-development"],
+  "publishConfig": { "access": "public" },
+  "type": "module",
+  "files": [
+    "extensions",
+    "skills",
+    "agents",
+    "resources",
+    "docs",
+    "PI.md",
+    "README.md",
+    "CHANGELOG.md",
+    "UPSTREAM.json",
+    "LICENSE"
+  ],
+  "pi": { "extensions": ["./extensions"], "skills": ["./skills"] },
+  "peerDependencies": { "@earendil-works/pi-coding-agent": "^1.0.0" },
+  "peerDependenciesMeta": { "@earendil-works/pi-coding-agent": { "optional": true } }
+}
