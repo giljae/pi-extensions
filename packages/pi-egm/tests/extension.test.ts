@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { expect, test } from "vitest";
-import { ROLE_TO_PERSONA, buildGoldfishArgv, runChild } from "../extensions/egm-goldfish/index.ts";
+import { ROLE_TO_PERSONA, buildGoldfishArgv, buildReviewTask, runChild } from "../extensions/egm-goldfish/index.ts";
 
 test("pins the exact read-only child argv", () => {
   expect(buildGoldfishArgv("Task: review x")).toEqual([
@@ -26,4 +26,28 @@ test("maps every vendored persona name", () => {
 
 test("runChild rejects instead of hanging when the command is missing", async () => {
   await expect(runChild({ command: "definitely-not-a-real-binary-xyz", args: [] })).rejects.toThrow();
+});
+
+test("buildReviewTask carries standards, context, and focus", () => {
+  const task = buildReviewTask({
+    role: "egm-zoom-out",
+    target: "/abs/design.md",
+    standards: ["/abs/zoom-out-standard.md"],
+    context: ["/abs/baseline.md", "/abs/zoom_out_report.md"],
+    focus: "focus on mitigations",
+  });
+  for (const needle of [
+    "/abs/design.md",
+    "/abs/zoom-out-standard.md",
+    "/abs/baseline.md",
+    "/abs/zoom_out_report.md",
+    "focus on mitigations",
+  ]) {
+    expect(task).toContain(needle);
+  }
+});
+
+test("buildReviewTask works with only role and target", () => {
+  const task = buildReviewTask({ role: "egm-comprehension", target: "/abs/x.md" });
+  expect(task).toContain("/abs/x.md");
 });

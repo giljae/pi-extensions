@@ -33,6 +33,33 @@ export function buildGoldfishArgv(task: string, extra: string[] = []): string[] 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "..", "..");
 
+export interface ReviewTaskInput {
+  role: GoldfishRole;
+  target: string;
+  standards?: string[];
+  context?: string[];
+  focus?: string;
+}
+
+/** Build the self-contained reviewer task, including standards and context. */
+export function buildReviewTask(input: ReviewTaskInput): string {
+  const bullets = (paths: string[]) => paths.map((p) => `- ${p}`).join("\n");
+  return [
+    `Act as the ${input.role} Goldfish reviewer.`,
+    `Target document: ${input.target}`,
+    input.standards?.length
+      ? `Read and apply these standards before reviewing:\n${bullets(input.standards)}`
+      : "",
+    input.context?.length
+      ? `Read this context before reviewing:\n${bullets(input.context)}`
+      : "",
+    input.focus ? `Focus: ${input.focus}` : "",
+    "Read the target and return your findings as text. Do not write files; the parent session writes every report.",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 /** Run the child process, rejecting on spawn failure or a non-zero exit. */
 export function runChild(invocation: { command: string; args: string[] }): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -76,6 +103,20 @@ export default function (pi: ExtensionAPI) {
         { description: "Which EGM persona the reviewer adopts." },
       ),
       target: Type.String({ description: "Absolute path of the document under review." }),
+      standards: Type.Optional(
+        Type.Array(Type.String(), {
+          description: "Absolute paths of EGM document standards the reviewer must apply.",
+        }),
+      ),
+      context: Type.Optional(
+        Type.Array(Type.String(), {
+          description:
+            "Absolute paths to read before reviewing: GoldfishContext baseline files and prior-stage reports.",
+        }),
+      ),
+      focus: Type.Optional(
+        Type.String({ description: "Optional narrowing instruction for this review." }),
+      ),
       model: Type.Optional(Type.String({ description: "Optional pi model pattern for the child." })),
       thinking_level: Type.Optional(Type.String({ description: "Optional pi thinking level for the child." })),
     }),
@@ -88,7 +129,13 @@ export default function (pi: ExtensionAPI) {
       const extra: string[] = [];
       if (params.model) extra.push("--model", params.model);
       if (params.thinking_level) extra.push("--thinking", params.thinking_level);
-      const task = `Task: review ${params.target} as ${role}. Return findings as text.`;
+      const task = buildReviewTask({
+        role,
+        target: params.target,
+        standards: params.standards,
+        context: params.context,
+        focus: params.focus,
+      });
       const args = buildGoldfishArgv(task, [...extra, "--append-system-prompt", promptFile]);
       try {
         const output = await runChild(invocation(args));

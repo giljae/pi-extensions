@@ -157,6 +157,10 @@ Run the review, but use a fast model for the Goldfish reviewers.
 
 Left unset, a reviewer uses your session's default model and thinking level.
 
+The tool also accepts `standards`, `context`, and `focus`. The skills fill those
+in automatically so each reviewer gets the document standards, baseline files,
+and prior-stage reports its stage requires.
+
 ## What's vendored, and how it stays current
 
 `skills/`, `agents/`, `resources/`, and the referenced `docs/*.md` are copied
@@ -207,6 +211,10 @@ Tested live on Pi 1.5.2 on 2026-11-17 (headless, default model):
 - Fresh context holds: a marker present in the parent session did not reach the
   reviewer's output.
 - All seven skills register as `/skill:egm-*` commands.
+- A full five-stage `egm-review` (consolidated preset) completed: all ten
+  reviewers ran through `egm_goldfish`, and each stage's document standards and
+  the prior-stage report for Stage 8 were passed through the tool's `standards`
+  and `context` parameters.
 
 Not yet verified: the full interactive `egm-brainstorm` / `egm-draft` flows with
 human approval gates, which need an interactive session.

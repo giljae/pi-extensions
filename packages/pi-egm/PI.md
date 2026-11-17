@@ -18,8 +18,21 @@ Pi's equivalents.
 ## Fresh-context Goldfish reviewers (CRITICAL)
 
 A Goldfish runs in a child session with no conversation history. On Pi this is
-the `egm_goldfish` tool. Dispatch one call per reviewer with a `role` (a persona
-name resolved to a bundled file in code) and the absolute `target` path.
+the `egm_goldfish` tool. Dispatch one call per reviewer with:
+
+- `role` — the persona name (resolved to a bundled file in code, so a project
+  file cannot substitute it).
+- `target` — the absolute path of the document under review (or the sliced
+  range file the stage reviews).
+- `standards` — absolute paths of the `resources/document_standards/*.md` files
+  the stage applies (for example `zoom-out-standard.md`).
+- `context` — absolute paths to read first: the `GoldfishContext` baseline and
+  any prior-stage report the stage requires (for example `zoom_out_report.md`
+  in Stage 8).
+- `focus` — an optional narrowing instruction.
+
+The tool builds the self-contained reviewer task from these inputs, so the
+standards, context, and focus always reach the reviewer.
 
 The tool starts a fresh headless `pi` process with no context files, no MCP
 servers, no discovered skills or prompt templates, and no persisted session
