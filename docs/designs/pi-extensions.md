@@ -163,9 +163,12 @@ parameters `{ role, target, model?, thinking_level? }`.
 
 - `role` is a persona `name` from the vendored `agents/*.md`, resolved in code
   so a project file cannot substitute a bundled persona.
-- It spawns a fresh `pi` child with **`--no-extensions --no-context-files
-  --no-session --no-mcp --no-skills --no-prompt-templates`** and **`--tools
+- It spawns a fresh `pi` child with **`--no-context-files --no-session
+  --no-mcp --no-skills --no-prompt-templates`** and **`--tools
   read,grep,find,ls`**, and appends the persona body as the system prompt.
+- It does **not** pass `--no-extensions`. Provider extensions are how Pi reaches
+  some models, and disabling them leaves the reviewer unable to run. Recorded as
+  a live finding on 2026-11-17; tool isolation comes from the allowlist instead.
 - **My call:** reviewers get no `bash`, `edit`, or `write`. The parent writes
   every report; the reviewer returns findings as text. This is stricter than
   `@estebanforge/pi-egm`, which leaves `bash` and `write` enabled, and matches
@@ -219,7 +222,9 @@ or `docs/`:
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| `APPEND_SYSTEM.md` still loads in the child | Project-planted facts leak to reviewers | Verify on the pinned Pi version; if it loads, document it as a known limit and prefer a neutral cwd; treat as a blocker for a "supported" claim |
+| `--no-extensions` disables the provider extension | A reviewer cannot reach any model and the tool fails | Do not pass `--no-extensions`; keep the `--tools` allowlist for tool isolation. Found live on 2026-11-17. |
+| An installed extension appends system-prompt context | Extension-injected text influences a reviewer | Tool isolation is enforced by the allowlist; document the residual and advise keeping context-injecting extensions out of review sessions |
+| `APPEND_SYSTEM.md` still loads in the child | Project-planted facts leak to reviewers | `--no-context-files` disables it on Pi 1.5.2 (probe returned UNKNOWN); treat as host-version-dependent and never rely on it |
 | Upstream rewrites skill preamble wording | The transform silently skips | The script asserts exactly one match per skill and exits non-zero otherwise |
 | Vendored files edited by hand | Drift from `UPSTREAM.json` | Integrity test fails CI; the sync PR is the only path that changes them |
 | Scheduled workflow rots or is disabled | Updates stop flowing | The integrity test still passes on the last pin; the workflow is manual-dispatchable and documented in the README |

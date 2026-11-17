@@ -21,11 +21,19 @@ A Goldfish runs in a child session with no conversation history. On Pi this is
 the `egm_goldfish` tool. Dispatch one call per reviewer with a `role` (a persona
 name resolved to a bundled file in code) and the absolute `target` path.
 
-The tool starts a fresh headless `pi` process with no extensions, no context
-files, no MCP servers, no discovered skills or prompt templates, and no
-persisted session (`--no-extensions --no-context-files --no-session --no-mcp
---no-skills --no-prompt-templates`). It runs from a neutral directory, so pass
-absolute paths, and it appends the persona body as the child's system prompt.
+The tool starts a fresh headless `pi` process with no context files, no MCP
+servers, no discovered skills or prompt templates, and no persisted session
+(`--no-context-files --no-session --no-mcp --no-skills --no-prompt-templates`).
+It restricts the child to `--tools read,grep,find,ls`. It runs from a neutral
+directory, so pass absolute paths, and it appends the persona body as the
+child's system prompt.
+
+The child still loads your installed Pi extensions, because some providers are
+delivered as extensions and `--no-extensions` would leave a reviewer unable to
+reach any model. Tool isolation does not depend on that: the `--tools` allowlist
+disables every tool that is not `read`, `grep`, `find`, or `ls`, including tools
+an extension registers. An extension that injects text into the system prompt
+is the residual isolation gap; it is listed in the README's known limits.
 
 Reviewers are **read-only**: the child is launched with `--tools
 read,grep,find,ls` and has no `bash`, `edit`, or `write` tool. A reviewer

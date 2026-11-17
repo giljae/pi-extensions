@@ -4,7 +4,7 @@ import { ROLE_TO_PERSONA, buildGoldfishArgv, runChild } from "../extensions/egm-
 
 test("pins the exact read-only child argv", () => {
   expect(buildGoldfishArgv("Task: review x")).toEqual([
-    "--no-extensions", "--no-context-files", "--no-session",
+    "--no-context-files", "--no-session",
     "--no-mcp", "--no-skills", "--no-prompt-templates",
     "--tools", "read,grep,find,ls",
     "-p", "Task: review x",

@@ -112,11 +112,18 @@ subagent extension. This package does not depend on one. `egm_goldfish` starts
 its own `pi` child process and enforces the properties directly:
 
 - fresh context — `--no-session`, no parent history, no memory;
-- no inherited tooling — `--no-extensions --no-mcp --no-skills
-  --no-prompt-templates`;
 - no project instruction files — `--no-context-files` (disables `AGENTS.md` and
   `CLAUDE.md`);
-- read-only — `--tools read,grep,find,ls`.
+- no MCP, skills, or prompt templates — `--no-mcp --no-skills
+  --no-prompt-templates`;
+- read-only — a `--tools read,grep,find,ls` allowlist that disables every other
+  tool, built-in or from an extension. The reviewer has no `bash`, `edit`, or
+  `write`.
+
+The child still loads your installed extensions, because extension providers are
+how Pi reaches some models. It cannot use their tools, but an extension that
+appends to the system prompt can still influence a reviewer — see
+[Known limits](#known-limits).
 
 Because the parent session is not forking its own context, a generic "spawn a
 subagent" tool is neither required nor sufficient. A forked-context review is
@@ -170,9 +177,16 @@ overwrite them.
 
 ## Known limits
 
-- **`APPEND_SYSTEM.md` is not suppressed.** `--no-context-files` disables
-  `AGENTS.md` and `CLAUDE.md`, but Pi may still load `APPEND_SYSTEM.md` files.
-  Do not plant design facts there; treat it as outside the isolation boundary.
+- **Installed extensions still load in reviewers.** `--no-extensions` would
+  disable provider extensions and leave a reviewer unable to reach a model at
+  all, so it is not passed. The `--tools` allowlist blocks every extension tool,
+  but an extension that appends to the system prompt can still influence a
+  reviewer. If strict isolation matters, avoid context-injecting extensions
+  during a review.
+- **`APPEND_SYSTEM.md` is outside the isolation guarantee.** `--no-context-files`
+  disables `AGENTS.md` and `CLAUDE.md`. A probe on Pi 1.5.2 did not leak a
+  project `APPEND_SYSTEM.md`, but that is host-version-dependent — do not plant
+  design facts there.
 - **`egm-bootstrap` write workers are out of scope.** Reviewers are read-only,
   so bootstrap's write-capable worker delegation is not supported. The skill
   stops and says so instead of substituting a reviewer.
@@ -180,6 +194,22 @@ overwrite them.
   vendored `skills/<name>/SKILL.md` directly.
 - **Installing runs extension code.** As with any Pi package, review the source
   before installing.
+
+## Verified
+
+Tested live on Pi 1.5.2 on 2026-11-17 (headless, default model):
+
+- The package loads and `egm_goldfish` runs a real reviewer end to end.
+- A reviewer cannot write: asked to create a file, it has no write tool and
+  reports that.
+- `--no-context-files` works: a project `AGENTS.md` is not injected (a control
+  run without the flag saw it), and a project `APPEND_SYSTEM.md` did not leak.
+- Fresh context holds: a marker present in the parent session did not reach the
+  reviewer's output.
+- All seven skills register as `/skill:egm-*` commands.
+
+Not yet verified: the full interactive `egm-brainstorm` / `egm-draft` flows with
+human approval gates, which need an interactive session.
 
 ## Provenance and license
 

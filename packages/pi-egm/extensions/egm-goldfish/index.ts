@@ -21,7 +21,7 @@ export const ROLE_TO_PERSONA = {
 export type GoldfishRole = keyof typeof ROLE_TO_PERSONA;
 
 export const ISOLATION_ARGS = [
-  "--no-extensions", "--no-context-files", "--no-session",
+  "--no-context-files", "--no-session",
   "--no-mcp", "--no-skills", "--no-prompt-templates",
 ] as const;
 export const READ_ONLY_TOOLS = ["read", "grep", "find", "ls"] as const;
