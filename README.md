@@ -26,6 +26,7 @@ only that one.
 | --- | --- | --- |
 | [`@giljae/pi-egm`](packages/pi-egm) | Brings the [Elephant-Goldfish Model](https://egm.dev) spec-driven workflow to Pi: an elephant drafts the spec, fresh zero-context **read-only** Goldfish reviewers stress-test it, and you approve the trade-offs. No subagent extension required. | `pi install npm:@giljae/pi-egm` |
 | [`@giljae/pi-postgres-skills`](packages/pi-postgres-skills) | Brings Microsoft's [`postgres-skills`](https://github.com/microsoft/postgres-skills) to Pi — PostgreSQL best practices, Apache AGE graph workflows, and Oracle migration — and registers the bundled PostgreSQL MCP server. Vendored (MIT). | `pi install npm:@giljae/pi-postgres-skills` |
+| [`@giljae/pi-design-skills`](packages/pi-design-skills) | Brings [Emil Kowalski's](https://emilkowal.ski) [`skills`](https://github.com/emilkowalski/skills) to Pi — UI, motion, and interaction design craft that catches the mistakes agents make. Vendored (MIT). | `pi install npm:@giljae/pi-design-skills` |
 
 More packages land here over time. Each has its own README with the full
 details — start there:
@@ -34,6 +35,8 @@ details — start there:
   configuration, and the vendoring/sync model.
 - [`packages/pi-postgres-skills`](packages/pi-postgres-skills) — install, the
   database connection setup, the bundled MCP server, and the vendoring model.
+- [`packages/pi-design-skills`](packages/pi-design-skills) — install, the
+  skills, and the vendoring model.
 
 ## Install a package
 
@@ -59,7 +62,8 @@ Pi identifies each package by its npm name, and the gallery lists every
 pi-extensions/
 ├── packages/            # one directory per published package
 │   ├── pi-egm/          # @giljae/pi-egm
-│   └── pi-postgres-skills/   # @giljae/pi-postgres-skills
+│   ├── pi-postgres-skills/   # @giljae/pi-postgres-skills
+│   └── pi-design-skills/     # @giljae/pi-design-skills
 ├── scripts/             # repo tooling: the shared vendoring core and its CLI
 │   └── vendors/         # one descriptor per vendored package
 ├── tests/               # repo-level tests (scaffold, workflows, sync tooling)
@@ -101,11 +105,14 @@ the `pi-package` keyword lists each package on the Pi gallery.
 
 1. Create `packages/<name>/` with a `package.json`: a unique name, the
    `pi-package` keyword, `publishConfig.access: "public"`, a minimal `files`
-   list, a `pi` manifest when it ships skills or extensions, and a `LICENSE`.
+   list, a `pi` manifest when it ships skills or extensions, a `LICENSE`, and a
+   `repository` object (npm provenance requires it).
 2. If it vendors an upstream, add a descriptor at `scripts/vendors/<name>.ts`
    (a default `VendorSpec` export). `run-vendor-sync.ts` and `vendor-sync.yml`
    discover it automatically — no shared script or workflow change.
-3. Run `npm run vendor:check`, and `npm run check` for the full suite.
+3. Run `npm install` to add the workspace to `package-lock.json` (CI runs
+   `npm ci`, which fails on a stale lock), then `npm run vendor:check` and
+   `npm run check` for the full suite.
 4. Configure an [npm trusted publisher](https://docs.npmjs.com/trusted-publishers)
    for the new package name before its first publish.
 5. Open a pull request. CI covers the manifest, license, and shared-code
@@ -115,9 +122,12 @@ the `pi-package` keyword lists each package on the Pi gallery.
 
 Apache-2.0 for this repository. Vendored portions keep their upstream license:
 [`google/elephant-goldfish-model`](https://github.com/google/elephant-goldfish-model)
-(Apache-2.0, Copyright Google LLC) in `@giljae/pi-egm`, and
+(Apache-2.0, Copyright Google LLC) in `@giljae/pi-egm`,
 [`microsoft/postgres-skills`](https://github.com/microsoft/postgres-skills)
-(MIT, Copyright (c) 2025 Microsoft Corporation) in
-`@giljae/pi-postgres-skills`. See [NOTICE](NOTICE).
+(MIT, Copyright (c) 2025 Microsoft Corporation) in `@giljae/pi-postgres-skills`,
+and [`emilkowalski/skills`](https://github.com/emilkowalski/skills) (MIT,
+Copyright (c) 2026 Emil Kowalski) in `@giljae/pi-design-skills`. See
+[NOTICE](NOTICE).
 
-**Not an officially supported Google or Microsoft product.**
+**Not an officially supported Google or Microsoft product, and not affiliated
+with the upstream authors.**
