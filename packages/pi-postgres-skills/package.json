@@ -1,14 +1,43 @@
 {
   "name": "@giljae/pi-postgres-skills",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "PostgreSQL guidance for the Pi coding agent: Microsoft's postgres-skills (best practices, Apache AGE graphs, Oracle migration) with a bundled PostgreSQL MCP server. Vendored from microsoft/postgres-skills (MIT). Not an officially supported Microsoft product.",
   "license": "MIT",
-  "keywords": ["pi-package", "postgresql", "database", "mcp", "apache-age", "pgvector"],
-  "publishConfig": { "access": "public" },
+  "keywords": [
+    "pi-package",
+    "postgresql",
+    "database",
+    "mcp",
+    "apache-age",
+    "pgvector"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "files": ["extensions", "skills", "README.md", "LICENSE"],
-  "pi": { "extensions": ["./extensions"], "skills": ["./skills"] },
-  "dependencies": { "@microsoft/postgres-mcp": "0.3.0" },
-  "peerDependencies": { "@earendil-works/pi-coding-agent": "*" },
-  "peerDependenciesMeta": { "@earendil-works/pi-coding-agent": { "optional": true } }
+  "files": [
+    "extensions",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "dependencies": {
+    "@microsoft/postgres-mcp": "0.3.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  }
 }
