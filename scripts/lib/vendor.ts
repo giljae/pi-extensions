@@ -176,7 +176,7 @@ export function resolveRef(
 ): { ref: string; commit: string } {
   const strategy = spec.refStrategy;
   if (strategy.kind === "tag") {
-    let ref = opts.ref ?? strategy.tag;
+    let ref = opts.ref ?? (opts.latest ? undefined : strategy.tag);
     if (!ref) {
       const out = runGit(["ls-remote", "--tags", "--refs", spec.repo]);
       const tags = out.split("\n").map((line) => line.split("refs/tags/")[1]).filter(Boolean);
@@ -185,7 +185,7 @@ export function resolveRef(
     if (!ref) throw new Error(`no semver tag at ${spec.repo}`);
     return { ref, commit: lsRemoteTagCommit(runGit, spec.repo, ref) };
   }
-  const requested = opts.ref ?? strategy.commit;
+  const requested = opts.ref ?? (opts.latest ? undefined : strategy.commit);
   if (requested && /^[0-9a-f]{7,40}$/i.test(requested)) return { ref: requested, commit: requested };
   const commit = requested
     ? runGit(["ls-remote", spec.repo, requested]).split(/\s+/)[0]

@@ -85,6 +85,18 @@ test("resolveRef resolves a tag and an explicit commit", () => {
   expect(byTag.commit).toBe(byCommit.commit);
 });
 
+test("resolveRef with latest advances a commit pin but keeps it without latest", () => {
+  const repo = gitRepo();
+  const first = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo, encoding: "utf8" }).trim();
+  writeFileSync(path.join(repo, "plugin", "skills", "s", "SKILL.md"), "changed");
+  execFileSync("git", ["commit", "-aqm", "second"], { cwd: repo });
+  const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo, encoding: "utf8" }).trim();
+  const base = { repo: `file://${repo}`, include: [], transforms: [] } as unknown as VendorSpec;
+  const spec = { ...base, refStrategy: { kind: "commit", commit: first } } as VendorSpec;
+  expect(resolveRef(spec, {}, gitIn(repo)).commit).toBe(first);
+  expect(resolveRef(spec, { latest: true }, gitIn(repo)).commit).toBe(head);
+});
+
 test("runVendorSync copies, transforms, records, and reports change", () => {
   const repo = gitRepo(); const dest = tmp();
   const marker: Transform = { name: "marker", include: (p) => p.endsWith("SKILL.md"), apply: (t) => `${t}\nPi` };
