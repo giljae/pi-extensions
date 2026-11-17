@@ -1,0 +1,35 @@
+name: Vendor upstream sync
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Sync vendored packages
+        run: npx tsx scripts/run-vendor-sync.ts --all --latest --changeset
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: vendor-sync
+          delete-branch: true
+          title: "chore: sync vendored upstreams"
+          commit-message: "chore: sync vendored upstreams"
+          body: |
+            Automated vendoring sync from each package's pinned upstream.
+
+            Review the `UPSTREAM.json` ref/commit changes and the vendored diff.
+            CI and the vendor integrity check run on this pull request.
