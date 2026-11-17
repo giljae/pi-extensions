@@ -1,6 +1,6 @@
 {
   "name": "@giljae/pi-design-skills",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "UI, motion, and interaction design skills for the Pi coding agent, from Emil Kowalski (Vercel, Linear). Vendored from emilkowalski/skills (MIT). Not affiliated with the author.",
   "license": "MIT",
   "repository": {
@@ -8,9 +8,26 @@
     "url": "https://github.com/giljae/pi-extensions.git",
     "directory": "packages/pi-design-skills"
   },
-  "keywords": ["pi-package", "design", "ui", "animation", "motion", "frontend"],
-  "publishConfig": { "access": "public" },
+  "keywords": [
+    "pi-package",
+    "design",
+    "ui",
+    "animation",
+    "motion",
+    "frontend"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "files": ["skills", "README.md", "LICENSE"],
-  "pi": { "skills": ["./skills"] }
+  "files": [
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  }
 }
