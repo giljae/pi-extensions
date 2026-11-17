@@ -1,6 +1,6 @@
 {
   "name": "@giljae/pi-egm",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Elephant-Goldfish Model for the Pi coding agent: design with an elephant, review with fresh read-only Goldfish. Vendored from google/elephant-goldfish-model (Apache-2.0). Not an officially supported Google product.",
   "license": "Apache-2.0",
   "keywords": ["pi-package", "egm", "elephant-goldfish-model", "spec-driven-development"],
