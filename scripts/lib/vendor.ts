@@ -1,5 +1,7 @@
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 
 /** A deterministic rewrite of one vendored file. Must throw when its anchor is missing or ambiguous. */
@@ -135,4 +137,102 @@ export function checkVendor(spec: VendorSpec): boolean {
   if (!record) return false;
   const actual = hashTree(spec.packageDir, rootsOf(spec));
   return JSON.stringify(record.files) === JSON.stringify(actual);
+}
+
+function compareVersions(a: string, b: string): number {
+  const [a1, a2, a3] = a.replace(/^v/, "").split(".").map(Number);
+  const [b1, b2, b3] = b.replace(/^v/, "").split(".").map(Number);
+  return a1 - b1 || a2 - b2 || a3 - b3;
+}
+
+/** The highest `vX.Y.Z` tag, or null when there is none. */
+export function pickLatestTag(tags: string[]): string | null {
+  const semver = tags.filter((tag) => /^v\d+\.\d+\.\d+$/.test(tag));
+  if (semver.length === 0) return null;
+  semver.sort(compareVersions);
+  return semver[semver.length - 1];
+}
+
+function lsRemoteTagCommit(runGit: (args: string[]) => string, repo: string, tag: string): string {
+  const out = runGit(["ls-remote", "--tags", repo, `refs/tags/${tag}*`]);
+  let plain = "";
+  let peeled = "";
+  for (const line of out.split("\n")) {
+    const [sha, ref] = line.trim().split(/\s+/);
+    if (!ref) continue;
+    if (ref === `refs/tags/${tag}^{}`) peeled = sha;
+    else if (ref === `refs/tags/${tag}`) plain = sha;
+  }
+  const commit = peeled || plain;
+  if (!commit) throw new Error(`tag ${tag} not found at ${repo}`);
+  return commit;
+}
+
+/** Resolve a spec's ref strategy to a `{ ref, commit }` pair using remote queries only. */
+export function resolveRef(
+  spec: VendorSpec,
+  opts: { latest?: boolean; ref?: string },
+  runGit: (args: string[]) => string,
+): { ref: string; commit: string } {
+  const strategy = spec.refStrategy;
+  if (strategy.kind === "tag") {
+    let ref = opts.ref ?? strategy.tag;
+    if (!ref) {
+      const out = runGit(["ls-remote", "--tags", "--refs", spec.repo]);
+      const tags = out.split("\n").map((line) => line.split("refs/tags/")[1]).filter(Boolean);
+      ref = pickLatestTag(tags) ?? undefined;
+    }
+    if (!ref) throw new Error(`no semver tag at ${spec.repo}`);
+    return { ref, commit: lsRemoteTagCommit(runGit, spec.repo, ref) };
+  }
+  const requested = opts.ref ?? strategy.commit;
+  if (requested && /^[0-9a-f]{7,40}$/i.test(requested)) return { ref: requested, commit: requested };
+  const commit = requested
+    ? runGit(["ls-remote", spec.repo, requested]).split(/\s+/)[0]
+    : runGit(["ls-remote", spec.repo, "HEAD"]).split(/\s+/)[0];
+  if (!commit) throw new Error(`cannot resolve ${requested ?? "HEAD"} at ${spec.repo}`);
+  return { ref: requested ?? commit, commit };
+}
+
+/**
+ * Fetch the resolved commit, copy the allowlisted subset, apply the transforms,
+ * hash the tree, and record `UPSTREAM.json`. Returns whether the tree changed.
+ */
+export function runVendorSync(
+  spec: VendorSpec,
+  opts: { latest?: boolean; ref?: string } = {},
+): { changed: boolean; ref: string; commit: string } {
+  const previous = readUpstream(spec.packageDir);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "vendor-sync-"));
+  try {
+    const git = (args: string[]) => execFileSync("git", args, { cwd: tmp, encoding: "utf8" }).trim();
+    const remoteGit = (args: string[]) => execFileSync("git", args, { encoding: "utf8" }).trim();
+    git(["init", "-q"]);
+    git(["remote", "add", "origin", spec.repo]);
+    const { ref, commit } = resolveRef(spec, opts, remoteGit);
+    const symref = remoteGit(["ls-remote", "--symref", spec.repo, "HEAD"]);
+    const branch = symref.match(/ref:\s+(\S+)\tHEAD/)?.[1] ?? "HEAD";
+    git(["fetch", "-q", "origin", branch]);
+    git(["checkout", "-q", commit]);
+    copyVendored(tmp, spec.packageDir, spec.include, spec.files);
+    const roots = rootsOf(spec);
+    for (const rel of Object.keys(hashTree(spec.packageDir, roots))) {
+      const abs = path.join(spec.packageDir, rel);
+      const text = fs.readFileSync(abs, "utf8");
+      const out = applyTransform(text, rel, spec.transforms);
+      if (out !== text) fs.writeFileSync(abs, out);
+    }
+    const files = hashTree(spec.packageDir, roots);
+    const changed = JSON.stringify(previous?.files) !== JSON.stringify(files);
+    writeUpstream(spec.packageDir, {
+      repo: spec.repo,
+      ref,
+      commit,
+      transforms: spec.transforms.map((transform) => transform.name),
+      files,
+    });
+    return { changed, ref, commit };
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
 }
