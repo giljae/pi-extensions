@@ -42,9 +42,11 @@ one-line `Skipped on Pi:` note.
 
 On a stock Pi with no subagent tool, the delegated steps run in the main thread
 and nothing breaks — you still get the playbooks, principles, and verification
-discipline. Delegation and per-role model choice are enabled when
-[`pi-subagents`](https://www.npmjs.com/package/pi-subagents) is installed; that
-integration lands in a later release.
+discipline. Install [`pi-subagents`](https://www.npmjs.com/package/pi-subagents)
+and this package's two agents load automatically: `poteto-agent` (a writer with
+`edit`/`write`) and `comment-sicko` (read-only). `poteto-mode` then delegates
+through the adapter, and per-role model choice lives in `pi-subagents`
+configuration.
 
 ## Notes
 
