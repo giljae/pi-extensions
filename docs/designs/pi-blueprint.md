@@ -1,7 +1,7 @@
 # pi-blueprint
 
 - **Author:** [@giljae](https://github.com/giljae)
-- **Status:** Draft (awaiting approval)
+- **Status:** Approved
 - **Date:** 2026-11-19
 - **Tracking:** None. Downstream port of [`intincrab/blueprint`](https://github.com/intincrab/blueprint).
 - **Builds on:** [`docs/designs/pi-design-skills.md`](pi-design-skills.md) (the shared vendoring core,
