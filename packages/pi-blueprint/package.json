@@ -1,6 +1,6 @@
 {
   "name": "@giljae/pi-blueprint",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Animated patent-sheet explainers for the Pi coding agent, vendored from intincrab/blueprint (MIT). Not affiliated with the author.",
   "license": "MIT",
   "repository": {
@@ -8,9 +8,31 @@
     "url": "https://github.com/giljae/pi-extensions.git",
     "directory": "packages/pi-blueprint"
   },
-  "keywords": ["pi-package", "blueprint", "explainer", "diagram", "animation", "visualization", "documentation"],
-  "publishConfig": { "access": "public" },
+  "keywords": [
+    "pi-package",
+    "blueprint",
+    "explainer",
+    "diagram",
+    "animation",
+    "visualization",
+    "documentation"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "commonjs",
-  "files": ["skills", "prompts", "README.md", "LICENSE"],
-  "pi": { "skills": ["./skills"], "prompts": ["./prompts/*.md"] }
+  "files": [
+    "skills",
+    "prompts",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts/*.md"
+    ]
+  }
 }
