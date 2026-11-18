@@ -18,6 +18,7 @@ export interface VendorSpec {
   refStrategy: { kind: "tag"; tag?: string } | { kind: "commit"; commit?: string };
   include: IncludeEntry[];
   files?: Array<{ from: string; to: string }>;
+  exclude?: string[];
   transforms: Transform[];
   packageDir: string;
 }
@@ -101,12 +102,13 @@ export function writeUpstream(packageDir: string, record: VendorRecord): void {
   fs.writeFileSync(path.join(packageDir, "UPSTREAM.json"), `${JSON.stringify(record, null, 2)}\n`);
 }
 
-/** Remove each destination root, then copy the source root and any extra files. */
+/** Remove each destination root, then copy the source root and any extra files, then delete each excluded path. */
 export function copyVendored(
   srcRoot: string,
   packageDir: string,
   include: IncludeEntry[],
   files?: Array<{ from: string; to: string }>,
+  exclude: string[] = [],
 ): void {
   for (const entry of include) {
     const { from, to } = normalizeInclude(entry);
@@ -119,6 +121,9 @@ export function copyVendored(
     const dest = path.join(packageDir, entry.to);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(path.join(srcRoot, entry.from), dest);
+  }
+  for (const rel of exclude) {
+    fs.rmSync(path.join(packageDir, rel), { recursive: true, force: true });
   }
 }
 
@@ -214,7 +219,7 @@ export function runVendorSync(
     const branch = symref.match(/ref:\s+(\S+)\tHEAD/)?.[1] ?? "HEAD";
     git(["fetch", "-q", "origin", branch]);
     git(["checkout", "-q", commit]);
-    copyVendored(tmp, spec.packageDir, spec.include, spec.files);
+    copyVendored(tmp, spec.packageDir, spec.include, spec.files, spec.exclude);
     const roots = rootsOf(spec);
     for (const rel of Object.keys(hashTree(spec.packageDir, roots))) {
       const abs = path.join(spec.packageDir, rel);
