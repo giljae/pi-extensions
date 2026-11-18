@@ -27,6 +27,7 @@ only that one.
 | [`@giljae/pi-egm`](packages/pi-egm) | Brings the [Elephant-Goldfish Model](https://egm.dev) spec-driven workflow to Pi: an elephant drafts the spec, fresh zero-context **read-only** Goldfish reviewers stress-test it, and you approve the trade-offs. No subagent extension required. | `pi install npm:@giljae/pi-egm` |
 | [`@giljae/pi-postgres-skills`](packages/pi-postgres-skills) | Brings Microsoft's [`postgres-skills`](https://github.com/microsoft/postgres-skills) to Pi — PostgreSQL best practices, Apache AGE graph workflows, and Oracle migration — and registers the bundled PostgreSQL MCP server. Vendored (MIT). | `pi install npm:@giljae/pi-postgres-skills` |
 | [`@giljae/pi-design-skills`](packages/pi-design-skills) | Brings [Emil Kowalski's](https://emilkowal.ski) [`skills`](https://github.com/emilkowalski/skills) to Pi — UI, motion, and interaction design craft that catches the mistakes agents make. Vendored (MIT). | `pi install npm:@giljae/pi-design-skills` |
+| [`@giljae/pi-pstack`](packages/pi-pstack) | Brings [Lauren Tan's](https://x.com/poteto) [`pstack`](https://github.com/cursor/plugins/tree/main/pstack) to Pi — the `poteto-mode` router, 24 engineering principles, and 34 workflow skills, with a Pi harness adapter that maps the Cursor surface. Vendored (MIT). | `pi install npm:@giljae/pi-pstack` |
 
 More packages land here over time. Each has its own README with the full
 details — start there:
@@ -37,6 +38,8 @@ details — start there:
   database connection setup, the bundled MCP server, and the vendoring model.
 - [`packages/pi-design-skills`](packages/pi-design-skills) — install, the
   skills, and the vendoring model.
+- [`packages/pi-pstack`](packages/pi-pstack) — install, the skills, the Pi
+  harness adapter, and the vendoring model.
 
 ## Install a package
 
@@ -126,7 +129,9 @@ Apache-2.0 for this repository. Vendored portions keep their upstream license:
 [`microsoft/postgres-skills`](https://github.com/microsoft/postgres-skills)
 (MIT, Copyright (c) 2025 Microsoft Corporation) in `@giljae/pi-postgres-skills`,
 and [`emilkowalski/skills`](https://github.com/emilkowalski/skills) (MIT,
-Copyright (c) 2026 Emil Kowalski) in `@giljae/pi-design-skills`. See
+Copyright (c) 2026 Emil Kowalski) in `@giljae/pi-design-skills`, and
+[`cursor/plugins` `pstack`](https://github.com/cursor/plugins/tree/main/pstack)
+(MIT, Copyright (c) 2026 Lauren Tan) in `@giljae/pi-pstack`. See
 [NOTICE](NOTICE).
 
 **Not an officially supported Google or Microsoft product, and not affiliated
