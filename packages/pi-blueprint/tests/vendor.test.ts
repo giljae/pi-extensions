@@ -1,4 +1,6 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "vitest";
 import { checkVendor } from "../../../scripts/lib/vendor.ts";
 import spec from "../../../scripts/vendors/pi-blueprint.ts";
@@ -38,4 +40,11 @@ test("the worked examples are vendored", () => {
   const count = (sub: string) => readdirSync(new URL(sub, dir)).filter((n) => n.endsWith(".js")).length;
   expect(count("small/")).toBeGreaterThanOrEqual(10);
   expect(count("complex/")).toBeGreaterThanOrEqual(11);
+});
+
+test("the vendored linter runs clean on an example (runtime loads as CommonJS)", () => {
+  const script = fileURLToPath(new URL("../skills/blueprint/scripts/check.mjs", import.meta.url));
+  const example = fileURLToPath(new URL("../skills/blueprint/examples/small/cache.js", import.meta.url));
+  const out = execFileSync(process.execPath, [script, example], { encoding: "utf8" });
+  expect(out).toContain("clean");
 });

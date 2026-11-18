@@ -10,7 +10,7 @@
   },
   "keywords": ["pi-package", "blueprint", "explainer", "diagram", "animation", "visualization", "documentation"],
   "publishConfig": { "access": "public" },
-  "type": "module",
+  "type": "commonjs",
   "files": ["skills", "prompts", "README.md", "LICENSE"],
   "pi": { "skills": ["./skills"], "prompts": ["./prompts/*.md"] }
 }

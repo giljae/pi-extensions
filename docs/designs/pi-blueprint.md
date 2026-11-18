@@ -162,12 +162,17 @@ layer beside the vendored tree.
 
 ### Manifest, license, docs
 
-- `name: "@giljae/pi-blueprint"`, `version: "0.0.0"`, `license: "MIT"`, `type: "module"`,
+- `name: "@giljae/pi-blueprint"`, `version: "0.0.0"`, `license: "MIT"`, `type: "commonjs"`,
   `repository` pointing at this repo (`directory: packages/pi-blueprint`, required for npm
   provenance), `keywords: ["pi-package", "blueprint", "explainer", "diagram", "animation",
   "visualization", "documentation"]`, `publishConfig.access: "public"`,
   `files: ["skills", "prompts", "README.md", "LICENSE"]`,
   `pi: { "skills": ["./skills"], "prompts": ["./prompts/*.md"] }`.
+  `type` is `commonjs` (matching upstream), **not** `module`: the vendored
+  `runtime/blueprint.js` is a UMD/CommonJS file that `scripts/check.mjs` loads via
+  `createRequire()`. Under `type: "module"` every `.js` in the package is reclassified
+  as ESM, so `require()` yields an empty namespace and `check.mjs` fails with
+  `TypeError: BP.layout is not a function`. Verified end-to-end (lint + render + export).
   Version starts at `0.0.0`; the first release is a `patch` changeset to `0.0.1`
   (the `pi-pstack` baseline convention), so `release.yml` publishes `0.0.1`.
 - `LICENSE`: upstream MIT text, Copyright (c) 2026 Ajay Chauhan.
