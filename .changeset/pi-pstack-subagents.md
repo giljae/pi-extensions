@@ -1,5 +1,5 @@
 ---
-"@giljae/pi-pstack": minor
+"@giljae/pi-pstack": patch
 ---
 
 Optional `pi-subagents` integration: `@giljae/pi-pstack` now declares its
