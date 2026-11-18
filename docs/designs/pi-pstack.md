@@ -222,15 +222,26 @@ resource type). No `dependencies`.
 
 ### Milestone B — optional `pi-subagents` integration (release 0.1.0)
 
-- A `setup` skill (authored, or a section in `harness/pi.md`) that registers the
-  package's `agents/` directory with `pi-subagents` by adding it to
-  `agentScanDirs` in `~/.pi/agent/extensions/subagent/config.json` (or the
-  documented env var), idempotently, and only when `pi-subagents` is present.
-- `harness/pi.md` gains the per-role mapping: pstack's "code / judgment /
-  panel / swarm workers" roles → `pi-subagents` `thinking` levels, with the
-  user's Pi models. No Cursor slugs.
-- `poteto-mode`'s subagent steps already route through the adapter, so no skill
-  edit is needed to switch from in-thread to delegated.
+`pi-subagents` discovers agents from installed Pi packages: it scans
+`~/.pi/agent/npm/node_modules` (and the project equivalent), reads each
+package's `package.json`, and loads every directory listed under
+`pi-subagents.agents` or `pi.subagents.agents`. The integration is therefore
+declarative — no setup skill, extension, or `agentScanDirs` edit:
+
+- `package.json` declares `"pi-subagents": { "agents": ["./agents"] }`. With
+  `pi-subagents` installed the two agents load automatically; without it the
+  key is inert.
+- `pi-agent-frontmatter` also sets each agent's `tools` and `acceptanceRole`: a
+  comment reviewer must not edit. `poteto-agent` is a writer
+  (`read, grep, find, ls, bash, edit, write`, `acceptanceRole: writer`);
+  `comment-sicko` is read-only (`read, grep, find, ls`,
+  `acceptanceRole: read-only`).
+- `harness/pi.md` maps `poteto-agent`/`comment-sicko` to the registered agents,
+  maps each pstack role (code, judgment, panels, swarm workers) to a
+  `pi-subagents` `thinking` level, and points per-role *model* choice at
+  `pi-subagents`' own configuration, so no Cursor slug is ever used.
+- `poteto-mode`'s subagent steps route through the adapter, so no skill edit is
+  needed to switch from in-thread to delegated.
 
 ## Verification
 
