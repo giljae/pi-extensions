@@ -1,6 +1,6 @@
 {
   "name": "@giljae/pi-pstack",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Lauren Tan's pstack workflows for the Pi coding agent: poteto-mode, 24 principles, and 34 workflow skills. Vendored from cursor/plugins (MIT). Not affiliated with the author or Cursor.",
   "license": "MIT",
   "repository": {
@@ -8,10 +8,32 @@
     "url": "https://github.com/giljae/pi-extensions.git",
     "directory": "packages/pi-pstack"
   },
-  "keywords": ["pi-package", "pstack", "poteto-mode", "workflow", "principles"],
-  "publishConfig": { "access": "public" },
+  "keywords": [
+    "pi-package",
+    "pstack",
+    "poteto-mode",
+    "workflow",
+    "principles"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "files": ["skills", "agents", "harness", "README.md", "LICENSE"],
-  "pi": { "skills": ["./skills"] },
-  "pi-subagents": { "agents": ["./agents"] }
+  "files": [
+    "skills",
+    "agents",
+    "harness",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  },
+  "pi-subagents": {
+    "agents": [
+      "./agents"
+    ]
+  }
 }
