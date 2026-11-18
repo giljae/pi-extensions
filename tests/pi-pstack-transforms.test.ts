@@ -47,3 +47,21 @@ test("piAgentFrontmatter handles an agent with no model or background field", ()
   expect(out).toContain("inheritSkills: false");
   expect(out).not.toMatch(/^model:/m);
 });
+
+test("piAgentFrontmatter gives poteto-agent writer tools", () => {
+  const out = piAgentFrontmatter.apply(AGENT, "agents/poteto-agent.md");
+  expect(out).toContain("tools: read, grep, find, ls, bash, edit, write");
+  expect(out).toContain("acceptanceRole: writer");
+});
+
+test("piAgentFrontmatter makes comment-sicko read-only", () => {
+  const out = piAgentFrontmatter.apply(AGENT_NO_MODEL, "agents/comment-sicko.md");
+  expect(out).toContain("tools: read, grep, find, ls");
+  expect(out).toContain("acceptanceRole: read-only");
+  expect(out).not.toMatch(/^tools: .*\b(edit|write)\b/m);
+});
+
+test("piAgentFrontmatter throws on an unknown agent name", () => {
+  const orphan = "---\nname: mystery\ndescription: x\n---\n\nBody\n";
+  expect(() => piAgentFrontmatter.apply(orphan, "agents/mystery.md")).toThrow();
+});

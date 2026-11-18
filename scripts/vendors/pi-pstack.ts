@@ -14,6 +14,10 @@ const PI_NOTE =
   "every Cursor name it lists (`Task`, model slugs, `.cursor` paths) onto Pi.";
 
 const CURSOR_ONLY_KEYS = ["icon", "color", "alwaysApply", "paths"];
+const AGENT_PROFILES: Record<string, { tools: string; acceptanceRole: string }> = {
+  "poteto-agent": { tools: "read, grep, find, ls, bash, edit, write", acceptanceRole: "writer" },
+  "comment-sicko": { tools: "read, grep, find, ls", acceptanceRole: "read-only" },
+};
 const OPEN = "---\n".length;
 const CLOSE = "\n---".length;
 
@@ -50,6 +54,10 @@ export const piAgentFrontmatter: Transform = {
     const at = frontmatterEnd(text);
     const body = text.slice(OPEN, at - CLOSE);
     const lines = body.split("\n");
+    const nameLine = lines.find((line) => line.startsWith("name:"));
+    if (!nameLine) throw new Error("agent has no name");
+    const profile = AGENT_PROFILES[nameLine.slice("name:".length).trim()];
+    if (!profile) throw new Error(`unknown agent: ${nameLine}`);
     const model = lines.find((line) => line.startsWith("model:"));
     if (model && !model.startsWith("model: claude-")) throw new Error("unexpected model slug");
     const kept = lines.filter(
@@ -57,6 +65,8 @@ export const piAgentFrontmatter: Transform = {
     );
     kept.push("inheritSkills: false");
     if (model) kept.push("thinking: high");
+    kept.push(`tools: ${profile.tools}`);
+    kept.push(`acceptanceRole: ${profile.acceptanceRole}`);
     const head = `${text.slice(0, OPEN)}${kept.join("\n")}\n---`;
     return `${head}${text.slice(at)}`;
   },

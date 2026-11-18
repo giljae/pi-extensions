@@ -30,3 +30,13 @@ test("agents use the pi-subagents schema and the statechart corpus is excluded",
   }
   expect(existsSync(new URL("../skills/statechart/scripts/test", import.meta.url))).toBe(false);
 });
+
+test("agents carry writer/read-only pi-subagents policy", () => {
+  const dir = new URL("../agents/", import.meta.url);
+  const poteto = readFileSync(new URL("poteto-agent.md", dir), "utf8");
+  expect(poteto).toMatch(/^tools: .*edit, write/m);
+  expect(poteto).toContain("acceptanceRole: writer");
+  const sicko = readFileSync(new URL("comment-sicko.md", dir), "utf8");
+  expect(sicko).toContain("acceptanceRole: read-only");
+  expect(sicko).not.toMatch(/^tools: .*\b(edit|write)\b/m);
+});
