@@ -45,8 +45,9 @@ npm i playwright@1.56.1 && npx playwright install chromium
 NODE_PATH=~/.cache/pi-blueprint/node_modules node <skill-dir>/scripts/frames.mjs --src scene.js --out /tmp/scene.png
 ```
 
-MP4 also needs `ffmpeg` on `PATH` (on macOS the Xcode command-line tools are used instead).
-GIF and PNG need only Playwright.
+GIF and PNG need only Playwright. MP4 uses `ffmpeg` when it is on `PATH`; otherwise Chromium
+encodes it with WebCodecs, which covers macOS and Windows with nothing else installed (on
+Linux install `ffmpeg`). `--encoder ffmpeg|browser` forces one.
 
 ## Exports
 

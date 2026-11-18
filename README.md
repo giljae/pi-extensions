@@ -28,6 +28,7 @@ only that one.
 | [`@giljae/pi-postgres-skills`](packages/pi-postgres-skills) | Brings Microsoft's [`postgres-skills`](https://github.com/microsoft/postgres-skills) to Pi — PostgreSQL best practices, Apache AGE graph workflows, and Oracle migration — and registers the bundled PostgreSQL MCP server. Vendored (MIT). | `pi install npm:@giljae/pi-postgres-skills` |
 | [`@giljae/pi-design-skills`](packages/pi-design-skills) | Brings [Emil Kowalski's](https://emilkowal.ski) [`skills`](https://github.com/emilkowalski/skills) to Pi — UI, motion, and interaction design craft that catches the mistakes agents make. Vendored (MIT). | `pi install npm:@giljae/pi-design-skills` |
 | [`@giljae/pi-pstack`](packages/pi-pstack) | Brings [Lauren Tan's](https://x.com/poteto) [`pstack`](https://github.com/cursor/plugins/tree/main/pstack) to Pi — the `poteto-mode` router, 24 engineering principles, and 34 workflow skills, with a Pi harness adapter that maps the Cursor surface. Vendored (MIT). | `pi install npm:@giljae/pi-pstack` |
+| [`@giljae/pi-blueprint`](packages/pi-blueprint) | Brings [intincrab's](https://github.com/intincrab) [`blueprint`](https://github.com/intincrab/blueprint) to Pi — animated patent-sheet explainers: parts drawn in one at a time, numbered with leader lines and one plain caption per step, exported as GIF/MP4/PNG. Vendored (MIT). | `pi install npm:@giljae/pi-blueprint` |
 
 More packages land here over time. Each has its own README with the full
 details — start there:
@@ -40,6 +41,9 @@ details — start there:
   skills, and the vendoring model.
 - [`packages/pi-pstack`](packages/pi-pstack) — install, the skills, the Pi
   harness adapter, and the vendoring model.
+- [`packages/pi-blueprint`](packages/pi-blueprint) — install, the
+  `/blueprint` command, the Playwright scratch-dir setup, the exports, and the
+  vendoring model.
 
 ## Install a package
 
@@ -66,7 +70,9 @@ pi-extensions/
 ├── packages/            # one directory per published package
 │   ├── pi-egm/          # @giljae/pi-egm
 │   ├── pi-postgres-skills/   # @giljae/pi-postgres-skills
-│   └── pi-design-skills/     # @giljae/pi-design-skills
+│   ├── pi-design-skills/     # @giljae/pi-design-skills
+│   ├── pi-pstack/            # @giljae/pi-pstack
+│   └── pi-blueprint/         # @giljae/pi-blueprint
 ├── scripts/             # repo tooling: the shared vendoring core and its CLI
 │   └── vendors/         # one descriptor per vendored package
 ├── tests/               # repo-level tests (scaffold, workflows, sync tooling)
@@ -131,7 +137,9 @@ Apache-2.0 for this repository. Vendored portions keep their upstream license:
 and [`emilkowalski/skills`](https://github.com/emilkowalski/skills) (MIT,
 Copyright (c) 2026 Emil Kowalski) in `@giljae/pi-design-skills`, and
 [`cursor/plugins` `pstack`](https://github.com/cursor/plugins/tree/main/pstack)
-(MIT, Copyright (c) 2026 Lauren Tan) in `@giljae/pi-pstack`. See
+(MIT, Copyright (c) 2026 Lauren Tan) in `@giljae/pi-pstack`, and
+[`intincrab/blueprint`](https://github.com/intincrab/blueprint) (MIT, Copyright
+(c) 2026 Ajay Chauhan) in `@giljae/pi-blueprint`. See
 [NOTICE](NOTICE).
 
 **Not an officially supported Google or Microsoft product, and not affiliated
