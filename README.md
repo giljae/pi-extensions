@@ -122,8 +122,20 @@ the `pi-package` keyword lists each package on the Pi gallery.
 3. Run `npm install` to add the workspace to `package-lock.json` (CI runs
    `npm ci`, which fails on a stale lock), then `npm run vendor:check` and
    `npm run check` for the full suite.
-4. Configure an [npm trusted publisher](https://docs.npmjs.com/trusted-publishers)
-   for the new package name before its first publish.
+4. Bootstrap the new package name before its first release. npm only accepts a
+   trusted publisher for a package that already exists, so publish a throwaway
+   prerelease once from an authenticated machine, then configure the publisher:
+
+   ```bash
+   (cd packages/<name> && npm version 0.0.0-stage --no-git-tag-version \
+     && npm publish --access public \
+     && npm version 0.0.0 --no-git-tag-version)
+   npm trust github @giljae/<name> --repo giljae/pi-extensions \
+     --file release.yml --allow-publish
+   ```
+
+   A newly created publisher must complete its first publish within two days, so
+   run this immediately before merging the Version Packages pull request.
 5. Open a pull request. CI covers the manifest, license, and shared-code
    conventions for every package under `packages/*`.
 
