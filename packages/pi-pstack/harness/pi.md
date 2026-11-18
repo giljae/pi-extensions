@@ -20,7 +20,7 @@ drop it and say so. Never pass a field or value the Pi tool schema rejects.
 | Cursor | Pi |
 | --- | --- |
 | `subagent_type: generalPurpose` | The closest built-in agent, `delegate`. |
-| `poteto-agent`, `comment-sicko` | `agent: "poteto-agent"`, `agent: "comment-sicko"`, once registered with `pi-subagents`. Until then, run in the main thread. |
+| `poteto-agent`, `comment-sicko` | `agent: "poteto-agent"` (writer) and `agent: "comment-sicko"` (read-only). With `pi-subagents` installed, this package's agents load automatically (declared under `pi-subagents.agents`). Without it, run in the main thread. |
 | The `model:` line in an agent file | It holds a Cursor slug. Omit it; the child inherits the session model, or use a `thinking` level per the Models table. |
 | `readonly: true` | An agent whose `tools` are read-only, such as `reviewer`. Also tell the brief "do not edit files" and check `git status` afterward. |
 | `run_in_background: true` | A background run. |
@@ -37,6 +37,22 @@ drop it and say so. Never pass a field or value the Pi tool schema rejects.
 
 Verification always runs on the strongest model available to the session, not on
 the model that wrote the code.
+
+### Roles to thinking levels
+
+pstack picks a model per role. On Pi, map each role to a `pi-subagents` `thinking`
+level and set the concrete model in `pi-subagents` configuration. Never pass a
+Cursor slug.
+
+| pstack role | `thinking` |
+| --- | --- |
+| code playbooks: `feature`, `refactoring`, `bug-fix`, `perf-issue`, `hillclimb` | `high` |
+| judgment and prose | `high` |
+| `swarm workers`: verification and trivial mechanical edits | `high` |
+| review and design panels: `arena runners`, `interrogate reviewers` | `high` per seat |
+
+Raise a role to `max` for the hardest or subtlest work; lower it a step for
+routine work. No role runs above `max`.
 
 ## Paths
 
@@ -65,6 +81,7 @@ it in the line.
 
 ## setup-pstack
 
-Skip model pinning. Pi uses the session model. Role-based model selection belongs
-to `pi-subagents` configuration, which a later release wires up. On a stock Pi,
-say so once and continue.
+Skip pinning models into a rule file. On Pi, set each role's model in
+`pi-subagents` configuration (a per-agent `model`, or a role to `thinking` level
+per the Roles table). With no `pi-subagents`, say so once and use the session
+model.
