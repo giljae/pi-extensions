@@ -40,3 +40,9 @@ test("agents carry writer/read-only pi-subagents policy", () => {
   expect(sicko).toContain("acceptanceRole: read-only");
   expect(sicko).not.toMatch(/^tools: .*\b(edit|write)\b/m);
 });
+
+test("package declares its agents for pi-subagents discovery", () => {
+  const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+  expect(pkg["pi-subagents"]?.agents).toEqual(["./agents"]);
+  expect(existsSync(new URL("../agents", import.meta.url))).toBe(true);
+});

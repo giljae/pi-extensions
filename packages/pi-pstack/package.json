@@ -12,5 +12,6 @@
   "publishConfig": { "access": "public" },
   "type": "module",
   "files": ["skills", "agents", "harness", "README.md", "LICENSE"],
-  "pi": { "skills": ["./skills"] }
+  "pi": { "skills": ["./skills"] },
+  "pi-subagents": { "agents": ["./agents"] }
 }
