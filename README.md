@@ -123,19 +123,25 @@ the `pi-package` keyword lists each package on the Pi gallery.
    `npm ci`, which fails on a stale lock), then `npm run vendor:check` and
    `npm run check` for the full suite.
 4. Bootstrap the new package name before its first release. npm only accepts a
-   trusted publisher for a package that already exists, so publish a throwaway
-   prerelease once from an authenticated machine, then configure the publisher:
+   trusted publisher for a package that already exists, and it rejects any
+   version whose core is `0.0.0`, so publish a `0.0.1-stage` placeholder once
+   from an authenticated machine, then configure the publisher:
 
    ```bash
-   (cd packages/<name> && npm version 0.0.0-stage --no-git-tag-version \
-     && npm publish --access public \
-     && npm version 0.0.0 --no-git-tag-version)
+   cd packages/<name>
+   npm version 0.0.1-stage --no-git-tag-version
+   npm publish --access public --tag stage
+   cd ../..
+   git checkout -- package-lock.json packages/<name>/package.json
    npm trust github @giljae/<name> --repo giljae/pi-extensions \
      --file release.yml --allow-publish
    ```
 
-   A newly created publisher must complete its first publish within two days, so
-   run this immediately before merging the Version Packages pull request.
+   The placeholder is a prerelease, so it sorts below the real `0.0.1` and does
+   not occupy it; remove its tag afterwards with
+   `npm dist-tag rm @giljae/<name> stage`. A newly created publisher must
+   complete its first publish within two days, so run this immediately before
+   merging the Version Packages pull request.
 5. Open a pull request. CI covers the manifest, license, and shared-code
    conventions for every package under `packages/*`.
 
