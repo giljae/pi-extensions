@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { expect, test } from "vitest";
@@ -53,6 +53,21 @@ test("copyVendored remaps a source root to a dest root and copies files", () => 
   copyVendored(src, dest, [{ from: "plugin/skills", to: "skills" }], [{ from: "LICENSE", to: "LICENSE" }]);
   expect(hashTree(dest, ["skills"])["skills/s/SKILL.md"]).toBeTruthy();
   expect(hashTree(dest, [])["LICENSE"]).toBeTruthy();
+});
+
+test("copyVendored removes each excluded path", () => {
+  const src = tmp(); const dest = tmp();
+  mkdirSync(path.join(src, "skills", "keep"), { recursive: true });
+  mkdirSync(path.join(src, "skills", "drop", "test"), { recursive: true });
+  writeFileSync(path.join(src, "skills", "keep", "SKILL.md"), "k");
+  writeFileSync(path.join(src, "skills", "drop", "SKILL.md"), "d");
+  writeFileSync(path.join(src, "skills", "drop", "test", "fixture"), "f");
+  copyVendored(src, dest, ["skills"], [], ["skills/drop/test"]);
+  expect(existsSync(path.join(dest, "skills", "drop", "test"))).toBe(false);
+  expect(Object.keys(hashTree(dest, ["skills"]))).toEqual([
+    "skills/drop/SKILL.md",
+    "skills/keep/SKILL.md",
+  ]);
 });
 
 test("pickLatestTag ranks semver vX.Y.Z and ignores others", () => {
