@@ -23,8 +23,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Publish dry run
-        run: npx changeset publish --dry-run
+      - name: Release plan
+        run: npx changeset status --verbose
 
   release:
     if: github.event_name == 'push'
