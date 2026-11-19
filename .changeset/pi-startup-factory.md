@@ -1,5 +1,5 @@
 ---
-"@giljae/pi-startup-factory": minor
+"@giljae/pi-startup-factory": patch
 ---
 
 Add `@giljae/pi-startup-factory`: an honest startup validation pipeline for Pi.

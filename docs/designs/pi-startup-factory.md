@@ -1,7 +1,7 @@
 # pi-startup-factory
 
 - **Author:** [@giljae](https://github.com/giljae)
-- **Status:** Draft
+- **Status:** Approved
 - **Date:** 2026-11-19
 - **Tracking:** None. Independent Pi package. **Concept inspired by**
   [`tiagoapolo/startup-factory`](https://github.com/tiagoapolo/startup-factory);
@@ -194,6 +194,28 @@ Hand-written package, so: `npm install` (lockfile), `npm run check`,
 `npx changeset` for `@giljae/pi-startup-factory` at `minor`. No vendor
 descriptor, no `UPSTREAM.json`, no workflow change. First publish uses the
 documented `0.0.1-stage` bootstrap before the trusted publisher is configured.
+
+## Validation
+
+Run end-to-end on Pi 1.5.2 with `pi-subagents` 0.89.1 and `pi-web-access`
+0.48.0 in an isolated config directory (`PI_CODING_AGENT_DIR`), so no real
+configuration was touched. `/factory` on the example niche completed the whole
+pipeline to `stage: done`:
+
+- The skill and all seven `factory-*` agents were discovered and loaded.
+- Foreground research children had working web tools; the three reports cite 46,
+  57, and 39 unique sources respectively.
+- `factory-judge` returned a real `NO GO` with a scored candidate table and named
+  the weak, unverified reports.
+- Gate 1, the strategist, the critic (REVISE, web re-verified, revision cap
+  enforced at two rounds), an interruption and `/factory resume`, Gate 2, the
+  architect, and `summary.md` all behaved as the skill specifies.
+- Open questions and the against-verdict decision were carried forward without
+  being hidden.
+
+No rule violations were observed. The pipeline is deliberately heavy: a full run
+is dominated by the three parallel research children (tens of minutes and
+substantial tokens on a cheap model).
 
 ## Provenance and license
 
