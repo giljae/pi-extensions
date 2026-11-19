@@ -1,0 +1,51 @@
+{
+  "name": "@giljae/pi-startup-factory",
+  "version": "0.0.0",
+  "description": "Run an honest startup validation pipeline on the Pi coding agent: parallel market research, a GO/PIVOT/NO GO verdict, a 30 day plan, a review, and a build plan, with founder gates. Content pack over pi-subagents and pi-web-access.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giljae/pi-extensions.git",
+    "directory": "packages/pi-startup-factory"
+  },
+  "keywords": [
+    "pi-package",
+    "startup",
+    "validation",
+    "market-research",
+    "subagents",
+    "workflow"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "files": [
+    "skills",
+    "agents",
+    "prompts",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ]
+  },
+  "pi-subagents": {
+    "agents": [
+      "./agents"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  }
+}
