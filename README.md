@@ -29,6 +29,7 @@ only that one.
 | [`@giljae/pi-design-skills`](packages/pi-design-skills) | Brings [Emil Kowalski's](https://emilkowal.ski) [`skills`](https://github.com/emilkowalski/skills) to Pi — UI, motion, and interaction design craft that catches the mistakes agents make. Vendored (MIT). | `pi install npm:@giljae/pi-design-skills` |
 | [`@giljae/pi-pstack`](packages/pi-pstack) | Brings [Lauren Tan's](https://x.com/poteto) [`pstack`](https://github.com/cursor/plugins/tree/main/pstack) to Pi — the `poteto-mode` router, 24 engineering principles, and 34 workflow skills, with a Pi harness adapter that maps the Cursor surface. Vendored (MIT). | `pi install npm:@giljae/pi-pstack` |
 | [`@giljae/pi-blueprint`](packages/pi-blueprint) | Brings [intincrab's](https://github.com/intincrab) [`blueprint`](https://github.com/intincrab/blueprint) to Pi — animated patent-sheet explainers: parts drawn in one at a time, numbered with leader lines and one plain caption per step, exported as GIF/MP4/PNG. Vendored (MIT). | `pi install npm:@giljae/pi-blueprint` |
+| [`@giljae/pi-startup-factory`](packages/pi-startup-factory) | Runs an honest startup validation pipeline on Pi — parallel market research, a GO/PIVOT/NO GO verdict, a 30 day plan, a review, and a build plan, with founder gates. A content pack over `pi-subagents` and `pi-web-access`; original work. | `pi install npm:@giljae/pi-startup-factory` |
 
 More packages land here over time. Each has its own README with the full
 details — start there:
@@ -44,6 +45,8 @@ details — start there:
 - [`packages/pi-blueprint`](packages/pi-blueprint) — install, the
   `/blueprint` command, the Playwright scratch-dir setup, the exports, and the
   vendoring model.
+- [`packages/pi-startup-factory`](packages/pi-startup-factory) — install, the
+  required companions, the pipeline and gates, the agents, and the run layout.
 
 ## Install a package
 
@@ -72,7 +75,8 @@ pi-extensions/
 │   ├── pi-postgres-skills/   # @giljae/pi-postgres-skills
 │   ├── pi-design-skills/     # @giljae/pi-design-skills
 │   ├── pi-pstack/            # @giljae/pi-pstack
-│   └── pi-blueprint/         # @giljae/pi-blueprint
+│   ├── pi-blueprint/         # @giljae/pi-blueprint
+│   └── pi-startup-factory/   # @giljae/pi-startup-factory
 ├── scripts/             # repo tooling: the shared vendoring core and its CLI
 │   └── vendors/         # one descriptor per vendored package
 ├── tests/               # repo-level tests (scaffold, workflows, sync tooling)
@@ -157,8 +161,10 @@ Copyright (c) 2026 Emil Kowalski) in `@giljae/pi-design-skills`, and
 [`cursor/plugins` `pstack`](https://github.com/cursor/plugins/tree/main/pstack)
 (MIT, Copyright (c) 2026 Lauren Tan) in `@giljae/pi-pstack`, and
 [`intincrab/blueprint`](https://github.com/intincrab/blueprint) (MIT, Copyright
-(c) 2026 Ajay Chauhan) in `@giljae/pi-blueprint`. See
-[NOTICE](NOTICE).
+(c) 2026 Ajay Chauhan) in `@giljae/pi-blueprint`. `@giljae/pi-startup-factory`
+is original work, not vendored; its pipeline shape is inspired by
+[`tiagoapolo/startup-factory`](https://github.com/tiagoapolo/startup-factory),
+which is unlicensed and contributes no code or text. See [NOTICE](NOTICE).
 
 **Not an officially supported Google or Microsoft product, and not affiliated
 with the upstream authors.**
