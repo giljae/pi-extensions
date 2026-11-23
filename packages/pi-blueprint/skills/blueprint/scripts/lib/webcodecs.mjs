@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { writeMP4 } from './mp4.mjs';
+import { CHROMIUM_FIX } from './chromium.mjs';
 
 const TIMESCALE = 90000, RATE = 48000;
 // Runs in the page: base64 <-> bytes, and a reply with the chunks encoded so far.
@@ -27,11 +28,17 @@ const drain = () => { const out = E.chunks.map(c => ({ ts: c.ts, key: c.key, dat
 // H.264 levels: [level_idc, max macroblocks per frame, max macroblocks per second].
 const LEVELS = [[0x1f, 3600, 108000], [0x20, 5120, 216000], [0x28, 8192, 245760], [0x2a, 8704, 522240], [0x32, 22080, 589824], [0x33, 36864, 983040], [0x34, 36864, 2073600], [0x3c, 139264, 4177920], [0x3d, 139264, 8355840], [0x3e, 139264, 16711680]];
 
-export async function openEncoder(pw, work, fps) {
+// `audio`: the export has an --audio track, so check for an AAC encoder up front too.
+export async function openEncoder(pw, work, fps, { audio = false } = {}) {
   const exe = process.env.BLUEPRINT_CHROMIUM;
   let browser;
   try { browser = await pw.chromium.launch(exe ? { executablePath: exe } : { channel: 'chromium' }); }
-  catch (e) { throw new Error(`MP4 without ffmpeg needs Playwright's full Chromium (npx playwright install chromium), or install ffmpeg.\n${String(e.message || e).split('\n')[0]}`); }
+  catch (e) {
+    const why = String(e.message || e).split('\n')[0].replace(/^browserType\.launch:\s*/, '');
+    throw new Error(exe
+      ? `Could not start Chromium at BLUEPRINT_CHROMIUM=${exe}: ${why}`
+      : `MP4 without ffmpeg needs a full Chromium (Playwright's headless shell has no H.264), or ffmpeg.\n${CHROMIUM_FIX}\n${why}`);
+  }
   const close = () => browser.close().catch(() => {});
   try {
     const page = await browser.newPage();
@@ -39,8 +46,10 @@ export async function openEncoder(pw, work, fps) {
     await page.goto(pathToFileURL(join(work, 'encoder.html')).href);  // WebCodecs needs a secure context; file:// is one
     const ok = await page.evaluate(() => typeof VideoEncoder === 'function' && VideoEncoder.isConfigSupported({ codec: 'avc1.42001f', width: 640, height: 480, bitrate: 2e6, framerate: 30 }).then(r => r.supported, () => false));
     if (!ok) throw new Error(process.platform === 'linux' && !exe
-      ? 'MP4 on Linux needs ffmpeg (apt install ffmpeg, dnf install ffmpeg-free): Playwright\'s Chromium has no H.264 encoder there. GIF and PNG work without it.'
+      ? 'MP4 on Linux needs ffmpeg (apt install ffmpeg, dnf install ffmpeg-free), or a distro Chromium with H.264 (Fedora\'s has it) set as BLUEPRINT_CHROMIUM: Playwright\'s Chromium has no H.264 encoder there. GIF and PNG work without either.'
       : `This Chromium (${browser.version()}) has no H.264 encoder. Install ffmpeg, or use Playwright's full Chromium (npx playwright install chromium${exe ? ' and unset BLUEPRINT_CHROMIUM' : ''}).`);
+    const aac = !audio || await page.evaluate(() => typeof AudioEncoder === 'function' && AudioEncoder.isConfigSupported({ codec: 'mp4a.40.2', sampleRate: 48000, numberOfChannels: 2, bitrate: 192000 }).then(r => r.supported, () => false));
+    if (!aac) throw new Error(`This Chromium (${browser.version()}) has no AAC encoder, so it cannot add --audio. Install ffmpeg, or drop --audio.`);
 
     let n = 0, size = null;
     const samples = [];
